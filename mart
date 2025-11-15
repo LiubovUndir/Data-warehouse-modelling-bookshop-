@@ -1,0 +1,106 @@
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.dim_customer` AS
+SELECT
+order_id,
+customer_id,
+customer_first_name,
+customer_last_name,
+customer_phone_number,
+customer_email
+FROM `HW3_Undir_Tkachenko.stg_data_customer`;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.dim_book` AS
+SELECT
+ order_id,
+ book_id,
+ book_name,
+ book_author,
+ pages_amount,
+ book_category,
+ publication_year,
+ book_language,
+ book_publisher,
+ book_price
+FROM `HW3_Undir_Tkachenko.stg_data_book`;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.dim_payment` AS
+SELECT
+ order_id,
+ payment_id,
+ payment_method,
+ payment_provided,
+ payment_date,
+ payment_month,
+ payment_year
+FROM `HW3_Undir_Tkachenko.stg_data_payment_date`;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.dim_shop` AS
+SELECT
+ order_id,
+ shop_id,
+ shop_city,
+ shop_adress,
+ shop_name,
+FROM `HW3_Undir_Tkachenko.stg_data_from_shop`;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.dim_seller` AS
+SELECT
+ order_id,
+ seller_id,
+ store_id,
+ seller_first_name,
+ seller_last_name,
+ seller_salary
+FROM `HW3_Undir_Tkachenko.stg_data_from_shop`;
+
+
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.fact_order` AS
+SELECT
+ c.order_id,
+ c.customer_id,
+ b.book_id,
+ p.payment_id,
+ s.shop_id,
+ se.seller_id,
+FROM `HW3_Undir_Tkachenko.dim_customer` AS c
+JOIN `HW3_Undir_Tkachenko.dim_book` AS b
+ ON c.order_id = b.order_id
+JOIN `HW3_Undir_Tkachenko.dim_payment` AS p
+ ON c.order_id = p.order_id
+JOIN `HW3_Undir_Tkachenko.dim_shop` AS s
+ ON s.order_id = p.order_id
+JOIN `HW3_Undir_Tkachenko.dim_seller` AS se
+ ON s.order_id = se.order_id;
+
+
+
+SELECT
+ b.book_name,
+ b.book_price,
+ CONCAT(se.seller_first_name, ' ', se.seller_last_name) AS seller_name,
+ se.seller_salary
+FROM `HW3_Undir_Tkachenko.fact_order` AS f
+JOIN `HW3_Undir_Tkachenko.dim_seller` AS se
+ ON f.seller_id = se.seller_id
+JOIN `HW3_Undir_Tkachenko.dim_book` AS b
+ ON f.book_id = b.book_id
+ORDER BY b.book_price DESC
+LIMIT 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
