@@ -1,0 +1,76 @@
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.stg_data_customer` AS
+SELECT 
+ order_id,
+ customer_id,
+ COALESCE(first_name, '-') AS customer_first_name,
+ COALESCE(last_name, '-') AS customer_last_name,
+ COALESCE(phone_number, '-') AS customer_phone_number,
+ COALESCE(customer_email, '-') AS customer_email
+FROM ( SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY customer_id) AS rn
+  FROM `HW3_Undir_Tkachenko.raw_data_customer`
+)
+WHERE rn = 1;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.stg_data_book` AS
+SELECT 
+ order_id,
+ book_id,
+ COALESCE(name, '-') AS book_name,
+ COALESCE(author, '-') AS book_author,
+ COALESCE(CAST(pages_amount AS STRING), '-') AS pages_amount,
+ COALESCE(category, '-') AS book_category,
+ COALESCE(CAST(publication_year AS STRING), '-') AS publication_year,
+ COALESCE(language, '-') AS book_language,
+ COALESCE(publisher, '-') AS book_publisher,
+ price AS book_price
+FROM ( SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY name ORDER BY book_id) AS rn
+  FROM `HW3_Undir_Tkachenko.raw_data_book`
+)
+WHERE rn = 1;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.stg_data_payment_date` AS
+SELECT 
+ order_id,
+ payment_id,
+ date AS payment_date,
+
+
+
+
+ COALESCE(payment_method, '-') AS payment_method,
+ COALESCE(CAST(payment_provided AS STRING), '-') AS payment_provided,
+ COALESCE(CAST(date_id AS STRING), '-') AS date_id,
+ COALESCE(month, '-') AS payment_month,
+ COALESCE(year, '-') AS payment_year
+FROM ( SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY payment_id ORDER BY payment_id) AS rn
+  FROM `HW3_Undir_Tkachenko.raw_data_payment_date`
+)
+WHERE rn = 1;
+
+
+CREATE OR REPLACE TABLE `HW3_Undir_Tkachenko.stg_data_from_shop` AS
+SELECT 
+ order_id,
+ shop_id,
+ seller_id,
+ store_id,
+ COALESCE(city, '-') AS shop_city,
+ COALESCE(adress, '-') AS shop_adress,
+ COALESCE(name, '-') AS shop_name,
+ COALESCE(first_name, '-') AS seller_first_name,
+ COALESCE(last_name, '-') AS seller_last_name,
+ COALESCE(CAST(salary AS STRING), '-') AS seller_salary
+FROM ( SELECT *,
+    ROW_NUMBER() OVER (PARTITION BY name ORDER BY shop_id) AS rn
+  FROM `HW3_Undir_Tkachenko.raw_data_from_shop`
+)
+WHERE rn = 1;
+
+
+
+
